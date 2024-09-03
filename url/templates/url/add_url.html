@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Add URL</h1>
+<form id="shorten-form" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="button" id="submit-button">Submit</button>
+</form>
+
+<ul id="url-list">
+    {% for i in url %}
+    <li><a href="{{ i.long_url }}">{{ i.short_url }}</a></li>
+    {% endfor %}
+</ul>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+       $('#submit-button').click(function(e) {
+           e.preventDefault();
+
+           $.ajax({
+               url: '{% url "add_url" %}',
+               method: 'POST',
+               data: $('#shorten-form').serialize(),
+               success: function(data) {
+                   if (data.error) {
+                       alert(data.error);
+                   } else {
+                       $('#url-list').append('<li><a href="' + data.long_url + '">' + data.short_url + '</a></li>');
+                   }
+               },
+           });
+       });
+   });
+</script>
+{% endblock %}

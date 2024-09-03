@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Список URL</h1>
+<ul>
+    {% for user_data in urls %}
+        <li>
+            <a href="#" class="toggle-url-list">{{ user_data.user.username }}</a>
+            <ul class="url-list" style="display: none;">
+                {% for url in user_data.urls %}
+                    <li><a href="{{ url.long_url }}">{{ url.short_url }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.toggle-url-list').click(function(e) {
+        e.preventDefault();
+        $(this).next('.url-list').slideToggle();
+    });
+});
+</script>
+
+{% endblock %}

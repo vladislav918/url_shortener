@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+
+import socket
 import environ
 import os
 
@@ -28,6 +30,12 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
+# Для запуска debug-toolbar
+INTERNAL_IPS = ['127.0.0.1', ]
+ip = socket.gethostbyname(socket.gethostname())
+INTERNAL_IPS += [ip[:-1] + '1']
+
+
 ALLOWED_HOSTS = []
 
 
@@ -43,10 +51,15 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'crispy_bootstrap5',
-    'users',
+    'debug_toolbar',
+
+    'users.apps.UsersConfig',
+    'url.apps.UrlConfig',
 ]
 
+
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
