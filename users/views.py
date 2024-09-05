@@ -8,6 +8,7 @@ from .forms import LoginUserForm, RegisterUserForm
 from .models import CustomUser
 
 from url.models import Shortener
+from url.services import get_dict_user_and_urls
 
 
 class LoginUser(LoginView):
@@ -41,19 +42,8 @@ class AdminTemplate(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['urls'] = self.get_urls()
+        context['urls'] = get_dict_user_and_urls()
         return context
-
-    def get_urls(self):
-        users = CustomUser.objects.filter(role=CustomUser.USER).prefetch_related('shortener_set').all()
-        urls = []
-        for user in users:
-            user_urls = user.shortener_set.all()
-            urls.append({
-                'user': user,
-                'urls': user_urls
-            })
-        return urls
 
 
 @method_decorator(user_passes_test(lambda u: u.role == CustomUser.ADMIN), name='dispatch')

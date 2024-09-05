@@ -1,3 +1,4 @@
+from typing import Any
 from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views.generic import FormView, ListView
@@ -5,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Shortener
 from .forms import ShortenerForm
-from .services import shorten_url, get_list_url
+from .services import shorten_url, get_list_url, get_dict_user_and_urls
 
 from users.models import CustomUser
 
@@ -37,15 +38,8 @@ class AddUrlView(LoginRequiredMixin, FormView):
 class UrlListView(ListView):
     model = Shortener
     template_name = 'url/url_list.html'
-    context_object_name = 'urls'
 
-    def get_queryset(self):
-        users = CustomUser.objects.prefetch_related('shortener_set').all()
-        urls = []
-        for user in users:
-            user_urls = user.shortener_set.all()
-            urls.append({
-                'user': user,
-                'urls': user_urls
-            })
-        return urls
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['urls'] = get_dict_user_and_urls()
+        return context
