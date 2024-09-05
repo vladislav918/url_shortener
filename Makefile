@@ -7,6 +7,9 @@ run:
 build:
 	$(DC) up --build
 
+down:
+	$(DC) down	
+
 migrate:
 	$(DC) exec web ./manage.py migrate
 
