@@ -42,7 +42,7 @@ class AdminTemplate(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['urls'] = get_dict_user_and_urls()
+        context['urls'] = get_dict_user_and_urls([CustomUser.USER])
         return context
 
 

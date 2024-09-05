@@ -1,23 +1,28 @@
 import random
 import string
 
+from typing import Optional, List, Dict
+
+from django.http import HttpRequest
+from django.db.models import QuerySet
+
 from .models import Shortener
 
 from users.models import CustomUser
 
 
-def _generate_short_url(url):
+def _generate_short_url() -> str:
     """Функция для генерации короткого url"""
 
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.sample(letters_and_digits, 8))
 
 
-def shorten_url(request, long_url):
+def shorten_url(request: HttpRequest, long_url: str) -> Shortener:
     """Функция для создания в БД новой записи с проверкой на наличие дубликата короткого URL"""
 
     while True:
-        short_url = _generate_short_url(long_url)
+        short_url = _generate_short_url()
 
         if not Shortener.objects.filter(short_url=short_url).exists():
 
@@ -30,7 +35,7 @@ def shorten_url(request, long_url):
             return new_url
 
 
-def get_list_url(request):
+def get_list_url(request: HttpRequest) -> QuerySet[Shortener]:
     """Функция для возвращении url, которые принадлежат пользователю"""
 
     url = Shortener.objects.filter(user=request.user)
@@ -38,7 +43,7 @@ def get_list_url(request):
     return url
 
 
-def get_dict_user_and_urls(roles=None):
+def get_dict_user_and_urls(roles: Optional[CustomUser] = None) -> List[Dict[CustomUser, QuerySet]]:
     """Функция для получения словаря пользователя и его url"""
 
     if roles is None:

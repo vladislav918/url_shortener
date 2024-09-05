@@ -5,7 +5,7 @@ from users.models import CustomUser
 
 from .models import Shortener
 from .views import UrlListView
-from .services import shorten_url, get_list_url, _generate_short_url
+from .services import shorten_url, _generate_short_url
 
 from unittest.mock import patch
 

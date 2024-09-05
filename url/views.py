@@ -1,5 +1,3 @@
-from typing import Any
-from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views.generic import FormView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,8 +6,6 @@ from .models import Shortener
 from .forms import ShortenerForm
 from .services import shorten_url, get_list_url, get_dict_user_and_urls
 
-from users.models import CustomUser
-
 
 class AddUrlView(LoginRequiredMixin, FormView):
     form_class = ShortenerForm
@@ -17,13 +13,9 @@ class AddUrlView(LoginRequiredMixin, FormView):
     success_url = '/' 
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
-
         form = self.get_form()
         if form.is_valid():
             new_url = shorten_url(request, form.cleaned_data['long_url'])
-
             return JsonResponse({'long_url': new_url.long_url, 'short_url': new_url.short_url})
 
         return JsonResponse({'error': 'Invalid URL'}, status=400)
