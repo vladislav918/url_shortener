@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views.generic import FormView, ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Shortener
 from .forms import ShortenerForm
@@ -9,7 +10,7 @@ from .services import shorten_url, get_list_url
 from users.models import CustomUser
 
 
-class AddUrlView(FormView):
+class AddUrlView(LoginRequiredMixin, FormView):
     form_class = ShortenerForm
     template_name = 'url/add_url.html'
     success_url = '/' 
