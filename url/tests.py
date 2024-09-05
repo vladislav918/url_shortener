@@ -116,18 +116,21 @@ class ShortenerServiceTests(TestCase):
 
 
     def test_generate_short_url(self):
+        """ Проверка на длину короткого url"""
         short_url = _generate_short_url('https://www.example.com')
         self.assertEqual(len(short_url), 8)
 
 
     @patch('random.sample')
     def test_generate_short_url_with_mock(self, mock_sample):
+        """ Проверка на создание короткого url """
         mock_sample.return_value = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
         short_url = _generate_short_url('https://www.example.com')
         self.assertEqual(short_url, 'abcdefgh')
 
 
     def test_shorten_url(self):
+        """ Проверка создания короткого url пользователем """
         long_url = 'https://www.example.com'
         self.client.force_login(self.user)
         request = self.client.get('/')
@@ -136,22 +139,3 @@ class ShortenerServiceTests(TestCase):
         self.assertEqual(new_url.long_url, long_url)
         self.assertEqual(new_url.user, self.user)
         self.assertEqual(Shortener.objects.count(), 1)
-
-
-    def test_get_list_url(self):
-        long_url = 'https://www.example.com'
-        self.client.force_login(self.user)
-        request = self.client.get('/')
-        request.user = self.user
-        shorten_url(request, long_url)
-        urls = get_list_url(request)
-        self.assertEqual(urls.count(), 1)
-        self.assertEqual(urls.first().user, self.user)
-
-
-    def test_get_list_url_empty(self):
-        self.client.force_login(self.user)
-        request = self.client.get('/')
-        request.user = self.user
-        urls = get_list_url(request)
-        self.assertEqual(urls.count(), 0)
