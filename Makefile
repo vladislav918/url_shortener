@@ -2,7 +2,7 @@ DC = docker compose
 
 
 run:
-	$(DC) up -d
+	$(DC) up
 
 build:
 	$(DC) up --build
