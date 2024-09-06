@@ -1,11 +1,11 @@
 DC = docker compose
-
+LOGS = docker logs
 
 run:
-	$(DC) up
+	$(DC) up -d
 
 build:
-	$(DC) up --build
+	$(DC) up --build -d
 
 down:
 	$(DC) down	
@@ -15,7 +15,12 @@ migrate:
 
 makemigrations:
 	$(DC) exec web ./manage.py makemigrations
-	make chown
+
+logs:
+	$(LOGS) web -f
 
 test:
 	$(DC) exec web ./manage.py test --noinput
+
+superuser:
+	$(DC) exec web python manage.py createsuperuser
