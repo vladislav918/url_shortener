@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>Список URL</h1>
+<ul>
+    {% for user_data in urls %}
+        <li>
+            <a href="#" class="toggle-url-list">{{ user_data.user.username }}</a>
+            
+            <ul class="url-list" style="display: none;">
+                {% for url in user_data.urls %}
+                    <li>
+                        <a href="{{ url.long_url }}">{{ url.short_url }}</a>
+                        {{ url.click_count }}
+                        
+                        <form method="post" action="{% url 'delete_url' url.pk %}">
+                            {% csrf_token %}
+                            <p><button type="submit">Удалить</button></p>
+                        </form>
+                    </li>
+                {% endfor %}
+                
+                <form method="post" action="{% url 'delete_user' user_data.user.pk %}">
+                    {% csrf_token %}
+                    <p><button type="submit">Удалить пользователя</button></p>
+                </form>
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_user' %}">Cоздать пользователя</a>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.toggle-url-list').click(function(e) {
+        e.preventDefault();
+        $(this).next('.url-list').slideToggle();
+    });
+});
+</script>
+
+{% endblock %}

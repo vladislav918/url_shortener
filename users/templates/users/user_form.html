@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <h1>Создать нового пользователя</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-error">{{ form.non_field_errors }}</div>
+        {{ form|crispy }}
+    
+        <p ><button type="submit">Создать пользователя</button></p>
+    </form>
+    <br>
+    <a href="{% url 'admin_statistics' %}">Назад к списку пользователей</a>
+</div>
+{% endblock %}
