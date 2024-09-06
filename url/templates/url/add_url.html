@@ -11,7 +11,7 @@
 
 <ul id="url-list">
     {% for i in url %}
-    <li><a href="{{ i.long_url }}">{{ i.short_url }}</a></li>
+        <li><a href="{% url 'redirect_short_url' i.short_url %}">{{ i.short_url }}</a></li>
     {% endfor %}
 </ul>
 

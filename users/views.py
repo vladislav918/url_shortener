@@ -14,6 +14,7 @@ from url.services import get_dict_user_and_urls
 class LoginUser(LoginView):
     form_class = LoginUserForm
     template_name = 'users/login.html'
+    success_url = reverse_lazy('add_url')
 
 
 class RegisterUser(CreateView):
