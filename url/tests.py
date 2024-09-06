@@ -4,7 +4,6 @@ from django.urls import reverse
 from users.models import CustomUser
 
 from .models import Shortener
-from .views import UrlListView
 from .services import shorten_url, _generate_short_url
 
 from unittest.mock import patch
@@ -98,18 +97,6 @@ class UrlListViewTests(TestCase):
         self.assertEqual(response.context['urls'][1]['urls'][0], self.url2)
 
 
-    def test_url_list_view_queryset(self):
-        """Проверка, что метод get_queryset() возвращает правильный список ссылок."""
-
-        view = UrlListView()
-        queryset = view.get_queryset()
-        self.assertEqual(len(queryset), 2)
-        self.assertEqual(queryset[0]['user'], self.user1)
-        self.assertEqual(queryset[0]['urls'][0], self.url1)
-        self.assertEqual(queryset[1]['user'], self.user2)
-        self.assertEqual(queryset[1]['urls'][0], self.url2)
-
-
 class ShortenerServiceTests(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(username='testuser', password='password')
@@ -117,7 +104,7 @@ class ShortenerServiceTests(TestCase):
 
     def test_generate_short_url(self):
         """ Проверка на длину короткого url"""
-        short_url = _generate_short_url('https://www.example.com')
+        short_url = _generate_short_url()
         self.assertEqual(len(short_url), 8)
 
 
@@ -125,7 +112,7 @@ class ShortenerServiceTests(TestCase):
     def test_generate_short_url_with_mock(self, mock_sample):
         """ Проверка на создание короткого url """
         mock_sample.return_value = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        short_url = _generate_short_url('https://www.example.com')
+        short_url = _generate_short_url()
         self.assertEqual(short_url, 'abcdefgh')
 
 
@@ -139,3 +126,36 @@ class ShortenerServiceTests(TestCase):
         self.assertEqual(new_url.long_url, long_url)
         self.assertEqual(new_url.user, self.user)
         self.assertEqual(Shortener.objects.count(), 1)
+
+
+
+class RedirectShortUrlViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = CustomUser.objects.create_user(username='testuser', password='password')
+
+        self.long_url = 'https://www.example.com'
+        self.short_url = 'test1234'
+        self.shortener = Shortener.objects.create(
+            long_url=self.long_url,
+            short_url=self.short_url,
+            user=self.user            
+        )
+
+
+    def test_redirect_short_url(self):
+        """Проверка на переход по короткому url"""
+        self.assertEqual(self.shortener.click_count, 0)
+
+        response = self.client.get(reverse('redirect_short_url', args=[self.short_url]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], self.long_url)
+        self.shortener.refresh_from_db()
+        self.assertEqual(self.shortener.click_count, 1)
+
+
+    def test_short_url_not_found(self):
+        """Проверка на несуществующий короткий url"""
+        response = self.client.get(reverse('redirect_short_url', args=['invalid_short_url']))
+        self.assertEqual(response.status_code, 404)

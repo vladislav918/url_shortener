@@ -10,7 +10,7 @@
             <a href="#" class="toggle-url-list">{{ user_data.user.username }}</a>
             <ul class="url-list" style="display: none;">
                 {% for url in user_data.urls %}
-                    <li><a href="{{ url.long_url }}">{{ url.short_url }}</a></li>
+                    <li><a href="{% url 'redirect_short_url' url.short_url %}">{{ url.short_url }}</a></li>
                 {% endfor %}
             </ul>
         </li>

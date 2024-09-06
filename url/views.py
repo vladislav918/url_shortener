@@ -1,6 +1,8 @@
+from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.generic import FormView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 
 from .models import Shortener
 from .forms import ShortenerForm
@@ -35,3 +37,11 @@ class UrlListView(ListView):
         context = super().get_context_data(**kwargs)
         context['urls'] = get_dict_user_and_urls()
         return context
+
+
+class RedirectShortUrlView(View):
+    def get(self, request, short_url):
+        short_url_obj = get_object_or_404(Shortener, short_url=short_url)
+        short_url_obj.click_count += 1
+        short_url_obj.save()
+        return redirect(short_url_obj.long_url)
