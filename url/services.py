@@ -35,14 +35,6 @@ def shorten_url(request: HttpRequest, long_url: str) -> Shortener:
             return new_url
 
 
-def get_list_url(request: HttpRequest) -> QuerySet[Shortener]:
-    """Функция для возвращении url, которые принадлежат пользователю"""
-
-    url = Shortener.objects.filter(user=request.user)
-
-    return url
-
-
 def get_dict_user_and_urls(roles: Optional[CustomUser] = None) -> List[Dict[CustomUser, QuerySet]]:
     """Функция для получения словаря пользователя и его url"""
 

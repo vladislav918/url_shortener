@@ -6,7 +6,7 @@ from django.views import View
 
 from .models import Shortener
 from .forms import ShortenerForm
-from .services import shorten_url, get_list_url, get_dict_user_and_urls
+from .services import shorten_url, get_dict_user_and_urls
 
 
 class AddUrlView(LoginRequiredMixin, FormView):
@@ -25,7 +25,8 @@ class AddUrlView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = ShortenerForm()
-        context['url'] = get_list_url(self.request)
+        context['url'] = Shortener.objects.filter(user=self.request.user)
+
         return context
 
 
